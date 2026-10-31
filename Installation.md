@@ -12,14 +12,14 @@ Welcome to the setup guide for the current **MediaSteru Swing desktop release**.
 
 1. Navigate to the **[Releases](https://github.com/notoxus/mediasteru/releases)** page of this repository.
 2. Download the archive that matches your Operating System:
-   * **Windows:** `MediaSteru-v1.0.0-Win.zip`
+   * **Windows x64:** `MediaSteru-v1.0.0-Windows-x64.zip`
    * **macOS:**
-     * `MediaSteru-v1.0.0-Mac-Intel.tar.gz` (Intel x64)
-     * `MediaSteru-v1.0.0-Mac-AppleSilicon.tar.gz` (Apple Silicon ARM)
+     * `MediaSteru-v1.0.0-macOS-Intel-x64.tar.gz` (Intel x64)
+     * `MediaSteru-v1.0.0-macOS-Apple-Silicon-arm64.tar.gz` (Apple Silicon ARM)
    * **Linux:**
      * `MediaSteru-v1.0.0-Linux-x64.tar.gz` (x64)
-     * `MediaSteru-v1.0.0-Linux-ARM.tar.gz` (ARM64)
-   * **Android companion:** `MediaSteru-v1.0.0-remote-desktop.apk` — sends shared links from the phone to the desktop app. The workflow does not currently publish a standalone Android downloader.
+     * `MediaSteru-v1.0.0-Linux-ARM64.tar.gz` (ARM64)
+   * **Android companion:** Download the APK from the [mediasteru-clients releases](https://github.com/notoxus/mediasteru-clients/releases). Its version is independent of the desktop host release.
 
 ## 📂 Package Structure (What's Inside)
 
@@ -27,9 +27,8 @@ Once extracted, your installation folder contains:
 
 * **Core App:** `MediaSteru.jar` — the main compiled application.
 * **Launcher Script:** `run.bat` (Windows) or `run.sh` (Mac/Linux) — starts the app.
-* **Embedded Runtime:** A trimmed JRE 21 tailored for your platform, built automatically by CI using `jlink`.
-* **Engine Tools:** checksum-verified `yt-dlp`, `ffmpeg`, and `deno` binaries
-  selected specifically for the package's OS and CPU architecture.
+* **Embedded Runtime:** A trimmed JRE 21 tailored for your platform, built automatically by CI using `jdeps` and `jlink`.
+* **Engine Tools:** The `tools/` folder contains only the checksum-verified `yt-dlp`, `ffmpeg`, and `deno` binaries selected for the package's OS and CPU architecture. The JRE is packaged separately beside the app.
 * **Dependency Manifest:** `tools-manifest.json`, the exact version and hash
   record used by both local development and GitHub release builds.
 
