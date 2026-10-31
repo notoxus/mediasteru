@@ -9,8 +9,6 @@ on:
       - Dockerfile
       - compose.yaml
       - .dockerignore
-      - 'cli/**'
-      - 'electron/**'
       - 'scripts/sync-tools.mjs'
       - tools-manifest.json
       - '.github/workflows/container.yml'

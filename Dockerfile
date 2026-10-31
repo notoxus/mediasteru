@@ -17,15 +17,9 @@ COPY tools-manifest.json ./
 COPY scripts/sync-tools.mjs ./scripts/sync-tools.mjs
 RUN node scripts/sync-tools.mjs --tools-dir=/out/tools
 
-FROM rust:1.88-bookworm AS cli-builder
-WORKDIR /src/cli
-COPY cli/Cargo.toml cli/Cargo.lock ./
-COPY cli/src ./src
-RUN cargo build --release --locked
-
 FROM node:22-trixie-slim AS runtime
 LABEL org.opencontainers.image.title="MediaSteru"
-LABEL org.opencontainers.image.description="Headless MediaSteru core with its Rust CLI/TUI"
+LABEL org.opencontainers.image.description="Headless MediaSteru media downloader"
 LABEL org.opencontainers.image.source="https://github.com/notoxus/mediasteru"
 
 ENV NODE_ENV=production \
@@ -39,9 +33,7 @@ WORKDIR /app
 RUN mkdir -p /app/tools /data /downloads && chown -R node:node /app /data /downloads
 COPY --from=electron-builder --chown=node:node /src/electron/dist ./dist
 COPY --from=tools-builder --chown=node:node /out/tools ./tools
-COPY --from=cli-builder /src/cli/target/release/mediasteru /usr/local/libexec/mediasteru
 COPY --chmod=755 docker/entrypoint.sh /usr/local/bin/mediasteru-entrypoint
-COPY --chmod=755 docker/cli-entrypoint.sh /usr/local/bin/mediasteru
 
 VOLUME ["/data", "/downloads"]
 EXPOSE 8765

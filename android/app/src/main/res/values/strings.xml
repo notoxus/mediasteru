@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">MediaSteru</string>
+    <string name="app_tagline">Media Hunter &amp; VJ Engine</string>
+    <string name="url_hint">Paste video or web URL here...</string>
+    <string name="btn_paste">Paste</string>
+    <string name="btn_hunt">Hunt Stream</string>
+    <string name="btn_import_api">Import API</string>
+    <string name="btn_vj_cue">VJ Cue Mode</string>
+    <string name="queue_title">Download Queue</string>
+    <string name="empty_queue_hint">Queue is empty. Paste a URL or launch Hunting Mode to begin.</string>
+    <string name="download_options">Download Options</string>
+    <string name="trim_video">Trim Video</string>
+    <string name="start_download">Start Download</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+</resources>

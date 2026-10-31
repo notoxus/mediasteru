@@ -232,14 +232,22 @@ export class Downloader {
         }
       };
 
+      const MAX_BUFFER_SIZE = 50000;
       const consume = (chunk: Buffer, stderr: boolean): void => {
         if (stderr) {
           stderrBuffer += chunk.toString('utf8');
+          // Avoid RAM buffer overflow
+          if (stderrBuffer.length > MAX_BUFFER_SIZE) {
+            stderrBuffer = stderrBuffer.slice(-MAX_BUFFER_SIZE);
+          }
           const lines = stderrBuffer.split(/\r?\n/);
           stderrBuffer = lines.pop() ?? '';
           lines.forEach((line) => handleLine(line, true));
         } else {
           stdoutBuffer += chunk.toString('utf8');
+          if (stdoutBuffer.length > MAX_BUFFER_SIZE) {
+            stdoutBuffer = stdoutBuffer.slice(-MAX_BUFFER_SIZE);
+          }
           const lines = stdoutBuffer.split(/\r?\n/);
           stdoutBuffer = lines.pop() ?? '';
           lines.forEach((line) => handleLine(line, false));
@@ -288,14 +296,15 @@ export class Downloader {
     }
     args.push(output);
     let exitCode: number;
+    let runResult: { exitCode: number, lastError: string };
     try {
-      exitCode = await this.runFfmpeg(request.id, tools.ffmpeg, args);
+      runResult = await this.runFfmpeg(request.id, tools.ffmpeg, args);
     } finally {
       manifestServer?.close();
     }
-    if (exitCode !== 0 || !existsSync(output)) {
+    if (runResult.exitCode !== 0 || !existsSync(output)) {
       if (existsSync(output)) rmSync(output, { force: true });
-      return null;
+      throw new Error(`FFmpeg fallback failed: ${runResult.lastError || 'Unknown error'}`);
     }
     if (request.format === 'mp4') {
       return this.convertToMp4(request, tools, output);
@@ -363,55 +372,72 @@ export class Downloader {
     const target = join(dirname(source), `${basename(source, extname(source))}.mp4`);
     this.emit({ id: request.id, type: 'processing', message: 'Converting to MP4…' });
     this.emit({ id: request.id, type: 'log', message: 'Converting MKV to MP4 without re-encoding…' });
-    let exitCode = await this.runFfmpeg(request.id, tools.ffmpeg, [
+
+    let { exitCode, lastError } = await this.runFfmpeg(request.id, tools.ffmpeg, [
       '-y', '-i', source, '-map', '0:v:0', '-map', '0:a:0?', '-c', 'copy', '-movflags', '+faststart', target,
     ]);
+    
     if (this.paused.has(request.id) || this.canceled.has(request.id)) {
       throw new Error('Conversion interrupted.');
     }
+    
     if (exitCode !== 0) {
       rmSync(target, { force: true });
       this.emit({ id: request.id, type: 'log', message: 'Re-encoding incompatible codecs to H.264/AAC…' });
-      exitCode = await this.runFfmpeg(request.id, tools.ffmpeg, [
+      // fallback
+      const fallbackResult = await this.runFfmpeg(request.id, tools.ffmpeg, [
         '-y', '-i', source, '-map', '0:v:0', '-map', '0:a:0?',
         '-c:v', 'libx264', '-preset', 'medium', '-crf', '18',
         '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', target,
       ]);
+      exitCode = fallbackResult.exitCode;
+      lastError = fallbackResult.lastError;
+      
       if (this.paused.has(request.id) || this.canceled.has(request.id)) {
         throw new Error('Conversion interrupted.');
       }
     }
+    
     if (exitCode !== 0 || !existsSync(target)) {
       rmSync(target, { force: true });
-      throw new Error('FFmpeg could not create the MP4 file.');
+      throw new Error(`FFmpeg could not create the MP4 file. Details: ${lastError || 'Unknown error'}`);
     }
+    
     rmSync(source, { force: true });
     return target;
   }
 
-  private runFfmpeg(id: string, executable: string, args: string[]): Promise<number> {
+  private runFfmpeg(id: string, executable: string, args: string[]): Promise<{ exitCode: number, lastError: string }> {
     return new Promise((resolvePromise) => {
       const child = spawn(executable, args, {
         windowsHide: true,
         detached: process.platform !== 'win32',
       });
       this.active.set(id, child);
+      
       let buffer = '';
+      let lastError = '';
+
       child.stderr.on('data', (chunk: Buffer) => {
         buffer += chunk.toString('utf8');
         const lines = buffer.split(/\r?\n/);
         buffer = lines.pop() ?? '';
         for (const line of lines) {
           if (/error|failed|forbidden/i.test(line)) {
-            this.log('WARN', `[ffmpeg] ${line.trim()}`);
+            lastError = line.trim();
+            this.log('WARN', `[ffmpeg] ${lastError}`);
           }
         }
       });
+
       child.on('error', (error) => {
         this.log('ERROR', `[ffmpeg] ${error.message}`);
-        resolvePromise(-1);
+        resolvePromise({ exitCode: -1, lastError: error.message });
       });
-      child.on('close', (code) => resolvePromise(code ?? -1));
+
+      child.on('close', (code) => {
+        resolvePromise({ exitCode: code ?? -1, lastError });
+      });
     });
   }
 
@@ -430,7 +456,6 @@ export class Downloader {
         try {
           child.kill(signal);
         } catch {
-          // The process may have exited between the state check and the signal.
         }
       }
     };
@@ -456,8 +481,6 @@ export class Downloader {
     if (selected === 'best') {
       return 'bestvideo+bestaudio/best';
     }
-    // `<=?` also accepts generic HLS streams whose manifest exposes no height.
-    // Any stream with a known height still has to respect the selected ceiling.
     return `bestvideo[height<=?${selected}]+bestaudio/best[height<=?${selected}]`;
   }
 
