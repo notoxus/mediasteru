@@ -31,7 +31,7 @@ jobs:
       - name: Sync version to build files
         run: |
           VERSION=${{ steps.version.outputs.VERSION }}
-          ./bump-version.sh $VERSION
+          bash ./bump-version.sh "$VERSION"
           
       - name: Set up Node.js for dependency synchronization
         uses: actions/setup-node@v5
