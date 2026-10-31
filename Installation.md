@@ -12,14 +12,14 @@ Welcome to the setup guide for the current **MediaSteru Swing desktop release**.
 
 1. Navigate to the **[Releases](https://github.com/notoxus/mediasteru/releases)** page of this repository.
 2. Download the archive that matches your Operating System:
-   * **Windows:** `MediaSteru-v1.0.6-Win.zip`
+   * **Windows:** `MediaSteru-v1.0.0-Win.zip`
    * **macOS:**
-     * `MediaSteru-v1.0.6-Mac-Intel.tar.gz` (Intel x64)
-     * `MediaSteru-v1.0.6-Mac-AppleSilicon.tar.gz` (Apple Silicon ARM)
+     * `MediaSteru-v1.0.0-Mac-Intel.tar.gz` (Intel x64)
+     * `MediaSteru-v1.0.0-Mac-AppleSilicon.tar.gz` (Apple Silicon ARM)
    * **Linux:**
-     * `MediaSteru-v1.0.6-Linux-x64.tar.gz` (x64)
-     * `MediaSteru-v1.0.6-Linux-ARM.tar.gz` (ARM64)
-   * **Android companion:** `MediaSteru-v1.0.6-remote-desktop.apk` — sends shared links from the phone to the desktop app. The workflow does not currently publish a standalone Android downloader.
+     * `MediaSteru-v1.0.0-Linux-x64.tar.gz` (x64)
+     * `MediaSteru-v1.0.0-Linux-ARM.tar.gz` (ARM64)
+   * **Android companion:** `MediaSteru-v1.0.0-remote-desktop.apk` — sends shared links from the phone to the desktop app. The workflow does not currently publish a standalone Android downloader.
 
 ## 📂 Package Structure (What's Inside)
 
@@ -39,7 +39,7 @@ Once extracted, your installation folder contains:
 
 ### For Windows Users
 
-1. Extract `MediaSteru-v1.0.6-Win.zip` to any folder.
+1. Extract `MediaSteru-v1.0.0-Win.zip` to any folder.
 2. **Double-click `run.bat`** to launch the app.
 
 > The launcher silently checks for the bundled JRE. If it's missing for any reason, it will download and install it automatically before launching.
