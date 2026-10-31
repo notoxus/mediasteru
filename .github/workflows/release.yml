@@ -21,31 +21,36 @@ jobs:
             runner: windows-latest
             target: win32-x64
             jre: jre
-            archive_suffix: Windows-x64.zip
+            archive_suffix: Portable-Windows-x64.zip
+            electron_suffix: Electron-Windows-x64.zip
           - id: macos-intel
             label: macOS Intel
             runner: macos-15-intel
             target: darwin-x64
             jre: jre-mac-x64
-            archive_suffix: macOS-Intel-x64.tar.gz
+            archive_suffix: Portable-macOS-Intel-x64.tar.gz
+            electron_suffix: Electron-macOS-Intel-x64.tar.gz
           - id: macos-apple-silicon
             label: macOS Apple Silicon
             runner: macos-15
             target: darwin-arm64
             jre: jre-mac-arm
-            archive_suffix: macOS-Apple-Silicon-arm64.tar.gz
+            archive_suffix: Portable-macOS-Apple-Silicon-arm64.tar.gz
+            electron_suffix: Electron-macOS-Apple-Silicon-arm64.tar.gz
           - id: linux-x64
             label: Linux x64
             runner: ubuntu-latest
             target: linux-x64
             jre: jre-linux-x64
-            archive_suffix: Linux-x64.tar.gz
+            archive_suffix: Portable-Linux-x64.tar.gz
+            electron_suffix: Electron-Linux-x64.tar.gz
           - id: linux-arm64
             label: Linux ARM64
             runner: ubuntu-24.04-arm
             target: linux-arm64
             jre: jre-linux-arm
-            archive_suffix: Linux-ARM64.tar.gz
+            archive_suffix: Portable-Linux-ARM64.tar.gz
+            electron_suffix: Electron-Linux-ARM64.tar.gz
 
     steps:
       - uses: actions/checkout@v5
@@ -60,7 +65,7 @@ jobs:
       - name: Set up Node.js for dependency synchronization
         uses: actions/setup-node@v5
         with:
-          node-version: '22'
+          node-version: '22.12'
 
       - name: Extract version from tag
         id: version
@@ -87,6 +92,37 @@ jobs:
 
       - name: Verify synchronized engine tools
         run: node scripts/sync-tools.mjs --target=${{ matrix.target }} --check
+
+      - name: Install Electron packaging dependencies
+        working-directory: electron
+        run: npm install
+
+      - name: Build Electron application
+        working-directory: electron
+        run: npm run build
+
+      - name: Package Electron application
+        working-directory: electron
+        shell: bash
+        env:
+          TARGET: ${{ matrix.target }}
+          VERSION: ${{ steps.version.outputs.VERSION }}
+        run: npm run package:release -- --target="$TARGET" --version="$VERSION"
+
+      - name: Create Electron Windows ZIP
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          ARCHIVE: MediaSteru-${{ github.ref_name }}-${{ matrix.electron_suffix }}
+        run: Compress-Archive -Path 'dist/electron/MediaSteru-win32-x64' -DestinationPath "dist/$env:ARCHIVE"
+
+      - name: Create Electron macOS/Linux archive
+        if: runner.os != 'Windows'
+        shell: bash
+        env:
+          TARGET: ${{ matrix.target }}
+          ARCHIVE: MediaSteru-${{ github.ref_name }}-${{ matrix.electron_suffix }}
+        run: tar -czf "dist/$ARCHIVE" -C dist/electron "MediaSteru-$TARGET"
 
       - name: Build the desktop application
         shell: bash
@@ -186,7 +222,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: mediasteru-release-${{ matrix.id }}
-          path: dist/MediaSteru-${{ github.ref_name }}-${{ matrix.archive_suffix }}
+          path: |
+            dist/MediaSteru-${{ github.ref_name }}-${{ matrix.archive_suffix }}
+            dist/MediaSteru-${{ github.ref_name }}-${{ matrix.electron_suffix }}
           if-no-files-found: error
 
   publish:

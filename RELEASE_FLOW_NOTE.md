@@ -16,14 +16,18 @@ git push origin main --tags
 
 ```
 
-Pushing a `vX.Y.Z` tag starts the **Build & Release** workflow. It creates
-separate, platform-specific packages for Windows x64, macOS Intel and Apple
-Silicon, and Linux x64 and ARM64. Each package contains only that platform's
-engine tools and its trimmed JRE. The workflow uses `jdeps` to detect the
-application's JDK module dependencies and `jlink` to build the runtime image;
-the TLS elliptic-curve provider is included explicitly because it is loaded
-dynamically. The workflow publishes the packages and checksums to GitHub; no
-manual upload is needed.
+Pushing a `vX.Y.Z` tag starts the **Build & Release** workflow. For Windows x64,
+macOS Intel and Apple Silicon, and Linux x64 and ARM64, it creates two packages:
+
+- `MediaSteru-vX.Y.Z-Portable-*` is the Java desktop app with a platform-specific
+  trimmed JRE and only that platform's engine tools. `jdeps` detects its JDK
+  module dependencies and `jlink` builds the runtime image; the TLS elliptic
+  curve provider is included explicitly because it is loaded dynamically.
+- `MediaSteru-vX.Y.Z-Electron-*` is the Electron desktop app with that platform's
+  engine tools copied into Electron's resources directory.
+
+The workflow publishes all packages and SHA-256 checksums to GitHub; no manual
+upload is needed. Electron packages are currently unsigned and not notarized.
 
 ### If a release workflow fails
 

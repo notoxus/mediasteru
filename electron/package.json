@@ -12,9 +12,11 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "tools:sync": "node ../scripts/sync-tools.mjs",
     "tools:check": "node ../scripts/sync-tools.mjs --check",
-    "tools:update": "node ../scripts/update-local-tools.mjs"
+    "tools:update": "node ../scripts/update-local-tools.mjs",
+    "package:release": "node scripts/package-release.mjs"
   },
   "devDependencies": {
+    "@electron/packager": "20.2.0",
     "@types/node": "^24.10.0",
     "electron": "^41.0.0",
     "typescript": "^5.9.3"

@@ -1,6 +1,6 @@
 # Electron / Wayland desktop client
 
-This directory contains the modern desktop UI preview. It runs alongside the existing Swing release while the migration is being validated.
+This directory contains the modern Electron desktop client. It runs alongside the Java Portable release while the migration is being validated.
 
 ## Run
 
@@ -83,10 +83,10 @@ Docker persists downloads through `./downloads` and application state through th
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the core/UI split and extension rules.
 
-Still to migrate before replacing Swing completely:
+Still to complete before replacing Swing completely:
 
 - Trim filmstrip/range selection.
 - Playlist expansion from a pasted page URL.
 - App auto-update UI.
-- Release packaging and code signing.
+- Code signing, notarization, and app auto-updates.
 - Playback-position tracking and resume.

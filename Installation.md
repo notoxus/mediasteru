@@ -1,29 +1,38 @@
 # 🚀 Installation Guide
 
-Welcome to the setup guide for the current **MediaSteru Swing desktop release**. It is **Plug & Play** — no system Java installation is required because the release archive is self-contained.
+Choose the Electron desktop package for the modern desktop client or the Java
+portable package to use the existing Swing app. Both releases bundle the media
+tools they need; only the Java package includes a trimmed JRE.
 
 ## Step 1: Requirements
 
-* **Browser Hunting:** Requires a Chromium-based browser, including Helium, Google Chrome, Chromium, Brave, Microsoft Edge, Vivaldi, Opera, Thorium, and compatible derivatives. The app loads its Hunting extension automatically; no manual `manifest.json` setup is needed. On Linux, executable browser AppImages in `~/Applications`, `~/.local/bin`, or `~/Downloads` are also detected.
-* **No Java needed!** A trimmed Java 21 Runtime Environment (JRE) is bundled inside every release package.
-  * If the JRE is somehow missing, the launcher will **automatically download it** from [Adoptium](https://adoptium.net) on first run (internet required for that one-time step only).
+* **Java Portable only:** No system Java installation is required; a trimmed
+  Java 21 Runtime Environment is bundled with the package.
+* **Browser Hunting:** The Java desktop app supports Chromium-based browsers,
+  including Helium, Google Chrome, Chromium, Brave, Microsoft Edge, Vivaldi,
+  Opera, Thorium, and compatible derivatives. Electron includes its own Hunting
+  browser.
 
 ## Step 2: Installing the App
 
 1. Navigate to the **[Releases](https://github.com/notoxus/mediasteru/releases)** page of this repository.
-2. Download the archive that matches your Operating System:
-   * **Windows x64:** `MediaSteru-v1.0.0-Windows-x64.zip`
-   * **macOS:**
-     * `MediaSteru-v1.0.0-macOS-Intel-x64.tar.gz` (Intel x64)
-     * `MediaSteru-v1.0.0-macOS-Apple-Silicon-arm64.tar.gz` (Apple Silicon ARM)
-   * **Linux:**
-     * `MediaSteru-v1.0.0-Linux-x64.tar.gz` (x64)
-     * `MediaSteru-v1.0.0-Linux-ARM64.tar.gz` (ARM64)
+2. Choose the Electron package or the Java Portable package for your OS and
+   architecture. Replace `vX.Y.Z` with the release version:
+   * **Windows x64:** `MediaSteru-vX.Y.Z-Electron-Windows-x64.zip` or
+     `MediaSteru-vX.Y.Z-Portable-Windows-x64.zip`
+   * **macOS Intel:** `MediaSteru-vX.Y.Z-Electron-macOS-Intel-x64.tar.gz` or
+     `MediaSteru-vX.Y.Z-Portable-macOS-Intel-x64.tar.gz`
+   * **macOS Apple Silicon:** `MediaSteru-vX.Y.Z-Electron-macOS-Apple-Silicon-arm64.tar.gz` or
+     `MediaSteru-vX.Y.Z-Portable-macOS-Apple-Silicon-arm64.tar.gz`
+   * **Linux x64:** `MediaSteru-vX.Y.Z-Electron-Linux-x64.tar.gz` or
+     `MediaSteru-vX.Y.Z-Portable-Linux-x64.tar.gz`
+   * **Linux ARM64:** `MediaSteru-vX.Y.Z-Electron-Linux-ARM64.tar.gz` or
+     `MediaSteru-vX.Y.Z-Portable-Linux-ARM64.tar.gz`
    * **Android companion:** Download the APK from the [mediasteru-clients releases](https://github.com/notoxus/mediasteru-clients/releases). Its version is independent of the desktop host release.
 
 ## 📂 Package Structure (What's Inside)
 
-Once extracted, your installation folder contains:
+The Java Portable archive contains:
 
 * **Core App:** `MediaSteru.jar` — the main compiled application.
 * **Launcher Script:** `run.bat` (Windows) or `run.sh` (Mac/Linux) — starts the app.
@@ -38,7 +47,7 @@ Once extracted, your installation folder contains:
 
 ### For Windows Users
 
-1. Extract `MediaSteru-v1.0.0-Win.zip` to any folder.
+1. Extract the `...-Portable-Windows-x64.zip` archive to any folder.
 2. **Double-click `run.bat`** to launch the app.
 
 > The launcher silently checks for the bundled JRE. If it's missing for any reason, it will download and install it automatically before launching.
@@ -76,9 +85,13 @@ MEDIASTERU_UI_SCALE=150% ./run.sh
 
 Install the `-remote-desktop.apk` file and allow installation from unknown sources when prompted. The phone and desktop must be on the same local network, and the desktop app must be running.
 
-## Electron Preview and Terminal Client
+## Electron Desktop and Terminal Client
 
-The Electron/Wayland desktop client and Rust terminal client are currently developer builds rather than packaged release assets. Build and start Electron first, then run the terminal client in another terminal:
+Extract the Electron archive and launch the `MediaSteru` app or executable
+inside it. The package includes the platform-specific media tools. These initial
+packages are unsigned, and macOS builds are not notarized, so the OS may show a
+first-launch security prompt. The Rust terminal client remains a developer build;
+build and start Electron first, then run the terminal client in another terminal:
 
 ```bash
 cd electron
