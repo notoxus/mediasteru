@@ -1,0 +1,29 @@
+{
+  "name": "mediasteru",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "release": "electron-builder --publish always"
+  },
+  "build": {
+    "appId": "com.notoxus.mediasteru",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "notoxus",
+        "repo": "mediasteru"
+      }
+    ]
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.11"
+  },
+  "devDependencies": {
+    "electron": "^45.2.1",
+    "electron-builder": "^26.18.0"
+  },
+  "allowScripts": {
+    "electron-winstaller@5.4.0": true
+  }
+}

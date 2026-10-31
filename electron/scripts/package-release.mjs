@@ -1,12 +1,9 @@
 #!/usr/bin/env node
 
-import { createRequire } from 'node:module';
 import { mkdir, readFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-
-const require = createRequire(import.meta.url);
-const packager = require('@electron/packager');
+import packager from '@electron/packager';
 const scriptDirectory = dirname(fileURLToPath(import.meta.url));
 const electronDirectory = resolve(scriptDirectory, '..');
 const repositoryRoot = resolve(electronDirectory, '..');
